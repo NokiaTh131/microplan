@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run dev:*)",
+      "Bash(node:*)",
+      "Bash(npm --version)",
+      "Bash(timeout 10s npm run dev)",
+      "Bash(npx eslint:*)",
+      "Bash(npx tsc:*)",
+      "Bash(rm:*)",
+      "Bash(pkill:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(cat:*)",
+      "Bash(timeout 5 npm run dev)",
+      "Bash(npx vite build:*)"
+    ],
+    "deny": []
+  }
+}
