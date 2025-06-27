@@ -57,7 +57,7 @@ interface PaletteItem {
   id: string;
   label: string;
   icon: React.ReactNode;
-  gradient: string;
+  color: string;
   template: LocalServiceConfig;
   category: string;
 }
@@ -206,27 +206,38 @@ const NodePalette: React.FC = () => {
     }
   };
 
-  const getServiceGradient = (type: string, category: string) => {
+  const getServiceColor = (type: string) => {
     switch (type) {
       case "api":
-        return "from-blue-500 to-blue-600";
+        return "bg-blue-600 text-white";
       case "database":
-        return "from-green-500 to-emerald-600";
+        return "bg-green-600 text-white";
       case "external":
-        return "from-purple-500 to-purple-600";
+        return "bg-purple-600 text-white";
       case "infrastructure":
-        if (category?.includes("Gateway")) return "from-orange-500 to-red-500";
-        if (category?.includes("Message") || category?.includes("Streaming"))
-          return "from-violet-500 to-indigo-600";
-        if (
-          category?.includes("Monitor") ||
-          category?.includes("Trac") ||
-          category?.includes("Log")
-        )
-          return "from-cyan-500 to-blue-600";
-        return "from-slate-500 to-gray-600";
+        return "bg-gray-700 text-white";
+      case "cache":
+        return "bg-red-600 text-white";
+      case "queue":
+        return "bg-orange-600 text-white";
+      case "auth":
+        return "bg-indigo-600 text-white";
+      case "gateway":
+        return "bg-emerald-700 text-white";
+      case "monitoring":
+        return "bg-yellow-600 text-white";
+      case "storage":
+        return "bg-cyan-600 text-white";
+      case "search":
+        return "bg-violet-600 text-white";
+      case "analytics":
+        return "bg-pink-600 text-white";
+      case "ml":
+        return "bg-slate-600 text-white";
+      case "cdn":
+        return "bg-teal-600 text-white";
       default:
-        return "from-gray-500 to-gray-600";
+        return "bg-slate-600 text-white";
     }
   };
 
@@ -237,7 +248,7 @@ const NodePalette: React.FC = () => {
         id,
         label: template.name,
         icon: getServiceIcon(template.techStack, template.type),
-        gradient: getServiceGradient(template.type, template.category || ""),
+        color: getServiceColor(template.type),
         template: template as LocalServiceConfig,
         category: template.category || "Other",
       })
@@ -299,7 +310,7 @@ const NodePalette: React.FC = () => {
         {/* Header */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
+            <div className="p-1.5 bg-blue-600 rounded-lg">
               <Layers className="w-4 h-4 text-white" />
             </div>
             <h3 className="text-sm font-bold text-slate-800">
@@ -357,10 +368,10 @@ const NodePalette: React.FC = () => {
                         handleDragStart(event, item.template)
                       }
                       onClick={() => handleClick(item.template)}
-                      className={`group relative flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-all duration-300 bg-gradient-to-r ${item.gradient} text-white overflow-hidden`}
+                      className={`group relative flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-all duration-300 ${item.color} overflow-hidden hover:opacity-90`}
                     >
-                      {/* Background Pattern */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      {/* Hover Background */}
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       {/* Icon */}
                       <div className="relative z-10 p-1 bg-white/20 rounded-md backdrop-blur-sm">
@@ -391,7 +402,7 @@ const NodePalette: React.FC = () => {
       </div>
 
       {/* Help Text */}
-      <div className="p-4 bg-gradient-to-r from-slate-100 to-slate-50 border-t border-slate-200">
+      <div className="p-4 bg-slate-50 border-t border-slate-200">
         <div className="text-xs text-slate-600 space-y-1.5">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />

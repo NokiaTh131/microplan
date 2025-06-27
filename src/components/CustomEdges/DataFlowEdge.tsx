@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -7,7 +7,7 @@ import {
   // MarkerType,
 } from "@xyflow/react";
 
-const DataFlowEdge: React.FC<EdgeProps> = ({
+const DataFlowEdge: React.FC<EdgeProps> = memo(({
   // id,
   sourceX,
   sourceY,
@@ -61,6 +61,8 @@ const DataFlowEdge: React.FC<EdgeProps> = ({
       </EdgeLabelRenderer>
     </>
   );
-};
+});
+
+DataFlowEdge.displayName = 'DataFlowEdge';
 
 export default DataFlowEdge;

@@ -1,13 +1,12 @@
-import React, { memo } from "react";
+import { memo } from 'react';
 import {
+  EdgeProps,
   BaseEdge,
   EdgeLabelRenderer,
-  EdgeProps,
   getBezierPath,
 } from "@xyflow/react";
 
-const AsyncEdge: React.FC<EdgeProps> = memo(({
-  // id,
+const TlsAsyncEdge = memo(({
   sourceX,
   sourceY,
   targetX,
@@ -16,8 +15,7 @@ const AsyncEdge: React.FC<EdgeProps> = memo(({
   targetPosition,
   style = {},
   markerEnd,
-  // data,
-}) => {
+}: EdgeProps) => {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -33,10 +31,10 @@ const AsyncEdge: React.FC<EdgeProps> = memo(({
         path={edgePath}
         markerEnd={markerEnd}
         style={{
-          strokeWidth: 2,
-          stroke: "#8b5cf6",
-          strokeDasharray: "8 4",
           ...style,
+          stroke: "#059669", // Darker green for TLS async
+          strokeWidth: 2,
+          strokeDasharray: "8 4", // Dashed line for async
         }}
       />
       <EdgeLabelRenderer>
@@ -45,23 +43,23 @@ const AsyncEdge: React.FC<EdgeProps> = memo(({
             position: "absolute",
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             fontSize: 10,
-            fontWeight: 600,
-            color: "#1f2937",
-            backgroundColor: "white",
+            fontWeight: "bold",
+            color: "#064e3b",
+            backgroundColor: "#a7f3d0",
             padding: "2px 6px",
             borderRadius: "4px",
-            border: "1px solid #d1d5db",
+            border: "1px solid #059669",
             pointerEvents: "all",
           }}
           className="nodrag nopan"
         >
-          Queue
+          TLS Queue
         </div>
       </EdgeLabelRenderer>
     </>
   );
 });
 
-AsyncEdge.displayName = 'AsyncEdge';
+TlsAsyncEdge.displayName = 'TlsAsyncEdge';
 
-export default AsyncEdge;
+export { TlsAsyncEdge };

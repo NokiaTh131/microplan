@@ -587,6 +587,376 @@ export const serviceTemplates: Record<string, ServiceConfig> = {
       TWILIO_AUTH_TOKEN: 'xxx',
       TWILIO_PHONE_NUMBER: '+1234567890'
     }
+  },
+
+  // AI/ML Services
+  'ollama-llm': {
+    name: 'Ollama LLM Server',
+    type: 'ml',
+    techStack: 'ollama',
+    port: 11434,
+    healthCheckPath: '/api/tags',
+    cpu: 4,
+    memory: 8192,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Local LLM inference server (Llama2, CodeLlama, Mistral)',
+    environment: {
+      OLLAMA_HOST: '0.0.0.0',
+      OLLAMA_MODELS: '/app/models',
+      OLLAMA_NUM_PARALLEL: '2',
+      OLLAMA_MAX_LOADED_MODELS: '3'
+    }
+  },
+  'mlflow-tracking': {
+    name: 'MLflow Tracking',
+    type: 'ml',
+    techStack: 'mlflow',
+    port: 5000,
+    healthCheckPath: '/health',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'ML lifecycle management and experiment tracking',
+    environment: {
+      MLFLOW_BACKEND_STORE_URI: 'postgresql://user:pass@postgres:5432/mlflow',
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: 's3://mlflow-artifacts/',
+      MLFLOW_SERVER_HOST: '0.0.0.0',
+      MLFLOW_SERVER_PORT: '5000'
+    }
+  },
+  'jupyter-notebook': {
+    name: 'Jupyter Lab',
+    type: 'ml',
+    techStack: 'jupyter',
+    port: 8888,
+    healthCheckPath: '/api/status',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Interactive computing environment for data science',
+    environment: {
+      JUPYTER_ENABLE_LAB: 'yes',
+      JUPYTER_TOKEN: 'your-secure-token',
+      GRANT_SUDO: 'yes',
+      CHOWN_HOME: 'yes'
+    }
+  },
+  'tensorboard-viz': {
+    name: 'TensorBoard',
+    type: 'ml',
+    techStack: 'tensorboard',
+    port: 6006,
+    healthCheckPath: '/',
+    cpu: 1,
+    memory: 2048,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'TensorFlow visualization toolkit',
+    environment: {
+      TENSORBOARD_LOG_DIR: '/logs',
+      TENSORBOARD_HOST: '0.0.0.0',
+      TENSORBOARD_PORT: '6006'
+    }
+  },
+  'huggingface-tgi': {
+    name: 'HuggingFace TGI',
+    type: 'ml',
+    techStack: 'text-generation-inference',
+    port: 8080,
+    healthCheckPath: '/health',
+    cpu: 4,
+    memory: 16384,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Text Generation Inference server for LLMs',
+    environment: {
+      MODEL_ID: 'microsoft/DialoGPT-medium',
+      NUM_SHARD: '1',
+      MAX_CONCURRENT_REQUESTS: '128',
+      MAX_BEST_OF: '2',
+      MAX_STOP_SEQUENCES: '4'
+    }
+  },
+  'vllm-server': {
+    name: 'vLLM Server',
+    type: 'ml',
+    techStack: 'vllm',
+    port: 8000,
+    healthCheckPath: '/health',
+    cpu: 8,
+    memory: 32768,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'High-throughput LLM inference server',
+    environment: {
+      MODEL: 'microsoft/DialoGPT-large',
+      HOST: '0.0.0.0',
+      PORT: '8000',
+      TENSOR_PARALLEL_SIZE: '1',
+      GPU_MEMORY_UTILIZATION: '0.9'
+    }
+  },
+  'whisper-api': {
+    name: 'Whisper ASR',
+    type: 'ml',
+    techStack: 'whisper',
+    port: 9000,
+    healthCheckPath: '/health',
+    cpu: 4,
+    memory: 8192,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Automatic Speech Recognition API',
+    environment: {
+      MODEL_SIZE: 'base',
+      DEVICE: 'cpu',
+      COMPUTE_TYPE: 'int8',
+      BEAM_SIZE: '5'
+    }
+  },
+  'stable-diffusion-api': {
+    name: 'Stable Diffusion API',
+    type: 'ml',
+    techStack: 'stable-diffusion',
+    port: 7860,
+    healthCheckPath: '/health',
+    cpu: 4,
+    memory: 12288,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Text-to-image generation API',
+    environment: {
+      MODEL_ID: 'runwayml/stable-diffusion-v1-5',
+      DEVICE: 'cuda',
+      PRECISION: 'fp16',
+      SAFETY_CHECKER: 'true'
+    }
+  },
+  'langchain-api': {
+    name: 'LangChain API',
+    type: 'ml',
+    techStack: 'langchain',
+    port: 8080,
+    healthCheckPath: '/health',
+    cpu: 2,
+    memory: 4096,
+    replicas: 2,
+    category: 'AI/ML',
+    description: 'LLM application framework API',
+    environment: {
+      OPENAI_API_KEY: 'sk-xxx',
+      LANGCHAIN_TRACING_V2: 'true',
+      LANGCHAIN_API_KEY: 'ls__xxx',
+      CHAINLIT_AUTH_SECRET: 'your-secret'
+    }
+  },
+  'chroma-vectordb': {
+    name: 'ChromaDB',
+    type: 'ml',
+    techStack: 'chromadb',
+    port: 8000,
+    healthCheckPath: '/api/v1/heartbeat',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Vector database for embeddings',
+    environment: {
+      CHROMA_SERVER_HOST: '0.0.0.0',
+      CHROMA_SERVER_HTTP_PORT: '8000',
+      PERSIST_DIRECTORY: '/chroma/data',
+      ANONYMIZED_TELEMETRY: 'false'
+    }
+  },
+  'qdrant-vectordb': {
+    name: 'Qdrant Vector DB',
+    type: 'ml',
+    techStack: 'qdrant',
+    port: 6333,
+    healthCheckPath: '/health',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'High-performance vector search engine',
+    environment: {
+      QDRANT__SERVICE__HTTP_PORT: '6333',
+      QDRANT__SERVICE__GRPC_PORT: '6334',
+      QDRANT__STORAGE__STORAGE_PATH: '/qdrant/storage'
+    }
+  },
+  'pinecone-proxy': {
+    name: 'Pinecone Proxy',
+    type: 'external',
+    techStack: 'pinecone',
+    port: 443,
+    cpu: 0,
+    memory: 0,
+    replicas: 0,
+    category: 'AI/ML',
+    description: 'Managed vector database service',
+    environment: {
+      PINECONE_API_KEY: 'xxx-xxx-xxx',
+      PINECONE_ENVIRONMENT: 'us-east1-gcp',
+      PINECONE_INDEX_NAME: 'embeddings'
+    }
+  },
+  'weaviate-vectordb': {
+    name: 'Weaviate',
+    type: 'ml',
+    techStack: 'weaviate',
+    port: 8080,
+    healthCheckPath: '/v1/.well-known/ready',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Vector database with built-in ML models',
+    environment: {
+      QUERY_DEFAULTS_LIMIT: '25',
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true',
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate',
+      DEFAULT_VECTORIZER_MODULE: 'none'
+    }
+  },
+  'milvus-vectordb': {
+    name: 'Milvus',
+    type: 'ml',
+    techStack: 'milvus',
+    port: 19530,
+    healthCheckPath: '/health',
+    cpu: 4,
+    memory: 8192,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Open-source vector database',
+    environment: {
+      ETCD_ENDPOINTS: 'etcd:2379',
+      MINIO_ADDRESS: 'minio:9000',
+      PULSAR_ADDRESS: 'pulsar://pulsar:6650'
+    }
+  },
+  'ray-serve': {
+    name: 'Ray Serve',
+    type: 'ml',
+    techStack: 'ray',
+    port: 8000,
+    healthCheckPath: '/-/healthz',
+    cpu: 4,
+    memory: 8192,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'Scalable ML model serving',
+    environment: {
+      RAY_SERVE_HTTP_HOST: '0.0.0.0',
+      RAY_SERVE_HTTP_PORT: '8000',
+      RAY_DEDUP_LOGS: '0'
+    }
+  },
+  'triton-inference': {
+    name: 'NVIDIA Triton',
+    type: 'ml',
+    techStack: 'triton',
+    port: 8000,
+    healthCheckPath: '/v2/health/ready',
+    cpu: 4,
+    memory: 8192,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'AI model inference server',
+    environment: {
+      TRITON_MODEL_REPOSITORY: '/models',
+      TRITON_LOG_VERBOSE: '1',
+      TRITON_HTTP_PORT: '8000',
+      TRITON_GRPC_PORT: '8001'
+    }
+  },
+  'feast-feature-store': {
+    name: 'Feast Feature Store',
+    type: 'ml',
+    techStack: 'feast',
+    port: 6566,
+    healthCheckPath: '/health',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'ML feature store',
+    environment: {
+      FEAST_USAGE: 'False',
+      FEAST_SERVER_TYPE: 'http',
+      FEAST_LOGGING_LEVEL: 'INFO'
+    }
+  },
+  'airflow-mlops': {
+    name: 'Apache Airflow',
+    type: 'ml',
+    techStack: 'airflow',
+    port: 8080,
+    healthCheckPath: '/health',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'ML pipeline orchestration',
+    environment: {
+      AIRFLOW__CORE__EXECUTOR: 'LocalExecutor',
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://airflow:airflow@postgres:5432/airflow',
+      AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key',
+      AIRFLOW__WEBSERVER__SECRET_KEY: 'your-secret-key'
+    }
+  },
+  'kubeflow-pipelines': {
+    name: 'Kubeflow Pipelines',
+    type: 'ml',
+    techStack: 'kubeflow',
+    port: 8080,
+    healthCheckPath: '/apis/v1beta1/healthz',
+    cpu: 2,
+    memory: 4096,
+    replicas: 1,
+    category: 'AI/ML',
+    description: 'ML workflows on Kubernetes',
+    environment: {
+      KUBEFLOW_USERID_HEADER: 'x-goog-authenticated-user-email',
+      KUBEFLOW_USERID_PREFIX: 'accounts.google.com:'
+    }
+  },
+  'bentoml-serve': {
+    name: 'BentoML',
+    type: 'ml',
+    techStack: 'bentoml',
+    port: 3000,
+    healthCheckPath: '/healthz',
+    cpu: 2,
+    memory: 4096,
+    replicas: 2,
+    category: 'AI/ML',
+    description: 'ML model serving framework',
+    environment: {
+      BENTOML_PORT: '3000',
+      BENTOML_HOST: '0.0.0.0',
+      BENTOML_HOME: '/bentoml'
+    }
+  },
+  'seldon-core': {
+    name: 'Seldon Core',
+    type: 'ml',
+    techStack: 'seldon',
+    port: 8080,
+    healthCheckPath: '/health/status',
+    cpu: 2,
+    memory: 4096,
+    replicas: 2,
+    category: 'AI/ML',
+    description: 'ML deployment on Kubernetes',
+    environment: {
+      PREDICTIVE_UNIT_HTTP_SERVICE_PORT: '8080',
+      PREDICTIVE_UNIT_GRPC_SERVICE_PORT: '5000'
+    }
   }
 };
 
@@ -610,7 +980,8 @@ export const serviceCategories = [
   'Logging',
   'Storage',
   'Serverless',
-  'Payment'
+  'Payment',
+  'AI/ML'
 ];
 
 // Performance optimization configs

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -7,7 +7,7 @@ import {
   // MarkerType,
 } from "@xyflow/react";
 
-const SyncEdge: React.FC<EdgeProps> = ({
+const SyncEdge: React.FC<EdgeProps> = memo(({
   // id,
   sourceX,
   sourceY,
@@ -60,6 +60,8 @@ const SyncEdge: React.FC<EdgeProps> = ({
       </EdgeLabelRenderer>
     </>
   );
-};
+});
+
+SyncEdge.displayName = 'SyncEdge';
 
 export default SyncEdge;

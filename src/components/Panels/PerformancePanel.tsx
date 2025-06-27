@@ -526,7 +526,7 @@ const PerformancePanel: React.FC = () => {
                   <p className="text-sm mb-3">{suggestion.description}</p>
                   <p className="text-xs text-slate-600 mb-3">{suggestion.implementation}</p>
                   
-                  <div className="grid grid-cols-3 gap-4 mb-3 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3 text-xs">
                     <div>
                       <div className="font-medium flex items-center gap-1">
                         <ArrowUp className="w-3 h-3 text-green-600" />

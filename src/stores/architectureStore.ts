@@ -12,6 +12,7 @@ import {
 } from "@xyflow/react";
 import { serviceNotifications } from '../utils/notifications';
 import { getNodeName } from '../utils/typeGuards';
+import { CommunicationType } from '../types/edges';
 
 export type ServiceType = "api" | "database" | "external" | "infrastructure" | "cache" | "queue" | "auth" | "gateway" | "monitoring" | "storage" | "search" | "analytics" | "ml" | "cdn" | "custom";
 
@@ -41,7 +42,7 @@ interface ArchitectureState {
   edges: Edge[];
   selectedNode: Node | null;
   selectedEdge: Edge | null;
-  selectedEdgeType: string;
+  selectedEdgeType: CommunicationType;
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
@@ -49,7 +50,7 @@ interface ArchitectureState {
   updateNode: (id: string, config: Partial<ServiceConfig> | any) => void;
   selectNode: (node: Node | null) => void;
   selectEdge: (edge: Edge | null) => void;
-  setSelectedEdgeType: (edgeType: string) => void;
+  setSelectedEdgeType: (edgeType: CommunicationType) => void;
   deleteNode: (id: string) => void;
   deleteEdge: (id: string) => void;
   loadTemplate: (nodes: Node[], edges: Edge[]) => void;
@@ -77,13 +78,34 @@ export const useArchitectureStore = create<ArchitectureState>((set, get) => ({
   onConnect: (connection) => {
     // Generate unique ID using timestamp + random number to avoid duplicates
     const uniqueId = `edge-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Map edge types to appropriate protocols
+    const getProtocolForEdgeType = (edgeType: CommunicationType): string => {
+      switch (edgeType) {
+        case 'sync':
+          return 'HTTP';
+        case 'async':
+          return 'Queue';
+        case 'data-flow':
+          return 'Data';
+        case 'https':
+          return 'HTTPS';
+        case 'tls-async':
+          return 'TLS Queue';
+        case 'encrypted-data':
+          return 'Encrypted Data';
+        default:
+          return 'Unknown';
+      }
+    };
+    
     const newEdge = {
       ...connection,
       id: uniqueId,
       type: get().selectedEdgeType,
       data: {
         communicationType: get().selectedEdgeType,
-        protocol: get().selectedEdgeType === 'sync' ? 'HTTP' : get().selectedEdgeType === 'async' ? 'Queue' : 'Data',
+        protocol: getProtocolForEdgeType(get().selectedEdgeType),
       },
     } as Edge;
     set({

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -13,6 +13,9 @@ import ServiceNode from "../CustomNodes/ServiceNode";
 import SyncEdge from "../CustomEdges/SyncEdge";
 import AsyncEdge from "../CustomEdges/AsyncEdge";
 import DataFlowEdge from "../CustomEdges/DataFlowEdge";
+import { HttpsEdge } from "../CustomEdges/HttpsEdge";
+import { TlsAsyncEdge } from "../CustomEdges/TlsAsyncEdge";
+import { EncryptedDataEdge } from "../CustomEdges/EncryptedDataEdge";
 
 interface ServiceConfig {
   name: string;
@@ -40,16 +43,6 @@ interface ServiceConfig {
   environment: Record<string, string>;
 }
 
-const nodeTypes = {
-  serviceNode: ServiceNode,
-};
-
-const edgeTypes = {
-  sync: SyncEdge,
-  async: AsyncEdge,
-  dataflow: DataFlowEdge,
-};
-
 const MicroservicesCanvas: React.FC = () => {
   const {
     nodes,
@@ -60,6 +53,20 @@ const MicroservicesCanvas: React.FC = () => {
     addNode,
     selectEdge,
   } = useArchitectureStore();
+
+  // Memoize node and edge types to prevent recreation on every render
+  const nodeTypes = useMemo(() => ({
+    serviceNode: ServiceNode,
+  }), []);
+
+  const edgeTypes = useMemo(() => ({
+    sync: SyncEdge,
+    async: AsyncEdge,
+    'data-flow': DataFlowEdge,
+    https: HttpsEdge,
+    'tls-async': TlsAsyncEdge,
+    'encrypted-data': EncryptedDataEdge,
+  }), []);
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -106,54 +113,42 @@ const MicroservicesCanvas: React.FC = () => {
         onDragOver={onDragOver}
         fitView
         attributionPosition="top-right"
-        onEdgeClick={(_, edge) => selectEdge(edge)}
-        defaultEdgeOptions={{
+        onEdgeClick={useCallback((_: any, edge: any) => selectEdge(edge), [selectEdge])}
+        defaultEdgeOptions={useMemo(() => ({
           type: "sync",
           style: { strokeWidth: 2, stroke: "#9ca3af" },
           markerEnd: {
             type: MarkerType.ArrowClosed,
             color: "#9ca3af",
           },
-        }}
+        }), [])}
       >
         <Background />
         <Controls className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg shadow-lg" />
         <MiniMap
-          nodeColor={(node) => {
-            const nodeData = node.data as any;
-            switch (nodeData?.config?.type) {
-              case "api":
-                return "#3b82f6";
-              case "auth":
-                return "#22c55e";
-              case "gateway":
-                return "#f97316";
-              case "database":
-                return "#10b981";
-              case "cache":
-                return "#ef4444";
-              case "queue":
-                return "#8b5cf6";
-              case "search":
-                return "#eab308";
-              case "monitoring":
-                return "#06b6d4";
-              case "analytics":
-                return "#6366f1";
-              case "storage":
-                return "#64748b";
-              case "cdn":
-                return "#60a5fa";
-              case "ml":
-                return "#ec4899";
-              case "external":
-                return "#8b5cf6";
-              case "infrastructure":
-                return "#f97316";
-              default:
-                return "#6b7280";
-            }
-          }}
+          nodeColor={useMemo(() => {
+            const nodeColorMap = {
+              "api": "#3b82f6",
+              "auth": "#22c55e", 
+              "gateway": "#f97316",
+              "database": "#10b981",
+              "cache": "#ef4444",
+              "queue": "#8b5cf6",
+              "search": "#eab308",
+              "monitoring": "#06b6d4",
+              "analytics": "#6366f1",
+              "storage": "#64748b",
+              "cdn": "#60a5fa",
+              "ml": "#ec4899",
+              "external": "#8b5cf6",
+              "infrastructure": "#f97316",
+            };
+            
+            return (node: any) => {
+              const nodeData = node.data as any;
+              return nodeColorMap[nodeData?.config?.type as keyof typeof nodeColorMap] || "#6b7280";
+            };
+          }, [])}
           className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg shadow-lg"
         />
       </ReactFlow>

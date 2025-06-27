@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { 
   Layout, 
-  Download, 
-  Eye, 
-  Users, 
-  Zap,
   Search,
-  CheckCircle,
-  AlertTriangle,
-  XCircle
+  Download,
 } from 'lucide-react';
 import { 
   architectureTemplates, 
@@ -17,6 +11,8 @@ import {
   ArchitectureTemplate 
 } from '../../data/architectureTemplates';
 import { useArchitectureStore } from '../../stores/architectureStore';
+import { useDebounce } from '../../hooks/useDebounce';
+import TemplateCard from './TemplateCard';
 
 const TemplateSelector: React.FC = () => {
   const store = useArchitectureStore();
@@ -26,36 +22,76 @@ const TemplateSelector: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<ArchitectureTemplate | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  const getComplexityIcon = (complexity: string) => {
-    switch (complexity) {
-      case 'Simple': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'Medium': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      case 'Complex': return <XCircle className="w-4 h-4 text-red-500" />;
-      default: return <CheckCircle className="w-4 h-4 text-gray-500" />;
-    }
-  };
 
   const getComplexityColor = (complexity: string) => {
     switch (complexity) {
-      case 'Simple': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Complex': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'Simple': return 'bg-green-50 text-green-700 border-green-200';
+      case 'Medium': return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 'Complex': return 'bg-red-50 text-red-700 border-red-200';
+      default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
-  const filteredTemplates = architectureTemplates.filter(template => {
-    const matchesCategory = selectedCategory === 'All' || template.category === selectedCategory;
-    const matchesComplexity = selectedComplexity === 'All' || template.complexity === selectedComplexity;
-    const matchesSearch = searchTerm === '' || 
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    return matchesCategory && matchesComplexity && matchesSearch;
-  });
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      'Web': 'bg-blue-600 text-white',
+      'API': 'bg-purple-600 text-white', 
+      'Monolith': 'bg-gray-600 text-white',
+      'Queue': 'bg-orange-600 text-white',
+      'CMS': 'bg-pink-600 text-white',
+      'E-commerce': 'bg-green-600 text-white',
+      'Observability': 'bg-yellow-600 text-white',
+      'Messaging': 'bg-violet-600 text-white',
+      'Content': 'bg-teal-600 text-white',
+      'Social': 'bg-indigo-600 text-white',
+      'Analytics': 'bg-emerald-600 text-white',
+      'IoT': 'bg-rose-600 text-white',
+      'Finance': 'bg-amber-600 text-white',
+      'Gaming': 'bg-fuchsia-600 text-white',
+      'Healthcare': 'bg-cyan-600 text-white',
+    };
+    return colors[category as keyof typeof colors] || 'bg-gray-600 text-white';
+  };
 
-  const loadTemplate = (template: ArchitectureTemplate) => {
+  const getCategoryAccent = (category: string) => {
+    const accents = {
+      'Web': 'bg-blue-50 border-blue-200 text-blue-700',
+      'API': 'bg-purple-50 border-purple-200 text-purple-700', 
+      'Monolith': 'bg-gray-50 border-gray-200 text-gray-700',
+      'Queue': 'bg-orange-50 border-orange-200 text-orange-700',
+      'CMS': 'bg-pink-50 border-pink-200 text-pink-700',
+      'E-commerce': 'bg-green-50 border-green-200 text-green-700',
+      'Observability': 'bg-yellow-50 border-yellow-200 text-yellow-700',
+      'Messaging': 'bg-violet-50 border-violet-200 text-violet-700',
+      'Content': 'bg-teal-50 border-teal-200 text-teal-700',
+      'Social': 'bg-indigo-50 border-indigo-200 text-indigo-700',
+      'Analytics': 'bg-emerald-50 border-emerald-200 text-emerald-700',
+      'IoT': 'bg-rose-50 border-rose-200 text-rose-700',
+      'Finance': 'bg-amber-50 border-amber-200 text-amber-700',
+      'Gaming': 'bg-fuchsia-50 border-fuchsia-200 text-fuchsia-700',
+      'Healthcare': 'bg-cyan-50 border-cyan-200 text-cyan-700',
+    };
+    return accents[category as keyof typeof accents] || 'bg-gray-50 border-gray-200 text-gray-700';
+  };
+
+  // Debounce search to improve performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  // Memoize filtered templates to prevent recalculation on every render
+  const filteredTemplates = useMemo(() => {
+    return architectureTemplates.filter(template => {
+      const matchesCategory = selectedCategory === 'All' || template.category === selectedCategory;
+      const matchesComplexity = selectedComplexity === 'All' || template.complexity === selectedComplexity;
+      const matchesSearch = debouncedSearchTerm === '' || 
+        template.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        template.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        template.tags.some(tag => tag.toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
+      
+      return matchesCategory && matchesComplexity && matchesSearch;
+    });
+  }, [selectedCategory, selectedComplexity, debouncedSearchTerm]);
+
+  const loadTemplate = useCallback((template: ArchitectureTemplate) => {
     // Create a mapping from template node IDs to new node IDs
     const nodeIdMapping: Record<string, string> = {};
     
@@ -98,12 +134,12 @@ const TemplateSelector: React.FC = () => {
     store.loadTemplate(newNodes as any, newEdges as any);
     
     console.log('Loaded template with', newNodes.length, 'nodes and', newEdges.length, 'edges');
-  };
+  }, [store]);
 
-  const handlePreview = (template: ArchitectureTemplate) => {
+  const handlePreview = useCallback((template: ArchitectureTemplate) => {
     setSelectedTemplate(template);
     setShowPreview(true);
-  };
+  }, []);
 
   if (showPreview && selectedTemplate) {
     return (
@@ -242,65 +278,17 @@ const TemplateSelector: React.FC = () => {
       </div>
 
       {/* Template Grid */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {filteredTemplates.map(template => (
-          <div key={template.id} className="border border-slate-200 rounded-lg p-3 hover:shadow-md transition-shadow">
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-slate-800 text-sm truncate">{template.name}</h4>
-                  <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium border flex items-center gap-1 ${getComplexityColor(template.complexity)}`}>
-                    {getComplexityIcon(template.complexity)}
-                    <span className="hidden sm:inline">{template.complexity}</span>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-600 mb-2 line-clamp-2">{template.description}</p>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {template.tags.slice(0, 2).map(tag => (
-                    <span key={tag} className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs">
-                      #{tag}
-                    </span>
-                  ))}
-                  {template.tags.length > 2 && (
-                    <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs">
-                      +{template.tags.length - 2}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-              <div className="flex items-center gap-3 text-xs text-slate-500">
-                <div className="flex items-center gap-1">
-                  <Users className="w-3 h-3" />
-                  <span className="hidden sm:inline">{template.nodes.length} services</span>
-                  <span className="sm:hidden">{template.nodes.length}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  <span className="hidden sm:inline">{template.edges.length} connections</span>
-                  <span className="sm:hidden">{template.edges.length}</span>
-                </div>
-              </div>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => handlePreview(template)}
-                  className="flex items-center gap-1 px-2 py-1 text-xs text-slate-600 border border-slate-300 rounded hover:bg-slate-50 transition-colors"
-                >
-                  <Eye className="w-3 h-3" />
-                  <span className="hidden sm:inline">Preview</span>
-                </button>
-                <button
-                  onClick={() => loadTemplate(template)}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                >
-                  <Download className="w-3 h-3" />
-                  <span className="hidden sm:inline">Load</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <TemplateCard
+            key={template.id}
+            template={template}
+            onPreview={handlePreview}
+            onLoad={loadTemplate}
+            getCategoryColor={getCategoryColor}
+            getCategoryAccent={getCategoryAccent}
+            getComplexityColor={getComplexityColor}
+          />
         ))}
       </div>
 

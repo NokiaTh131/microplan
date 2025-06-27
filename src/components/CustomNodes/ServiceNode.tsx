@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import {
   Server,
@@ -264,4 +264,4 @@ const ServiceNode: React.FC<NodeProps> = ({ id, data, selected }) => {
   );
 };
 
-export default ServiceNode;
+export default memo(ServiceNode);
