@@ -1,0 +1,756 @@
+{
+  "metadata": {
+    "name": "Microservice Planner Backend Architecture",
+    "description": "Complete microservices backend for the microservice planner application",
+    "version": "1.0.0",
+    "created": "2024-06-27",
+    "author": "Claude Code Assistant"
+  },
+  "nodes": [
+    {
+      "id": "api-gateway",
+      "type": "gateway",
+      "position": { "x": 400, "y": 50 },
+      "data": {
+        "label": "API Gateway",
+        "technology": "Kong/Traefik",
+        "port": 8080,
+        "description": "Main entry point for all client requests",
+        "responsibilities": [
+          "Request routing",
+          "Authentication",
+          "Rate limiting",
+          "API versioning",
+          "Request/response transformation"
+        ],
+        "resources": {
+          "cpu": "500m",
+          "memory": "512Mi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "auth-service",
+      "type": "auth",
+      "position": { "x": 150, "y": 200 },
+      "data": {
+        "label": "Authentication Service",
+        "technology": "Node.js + JWT",
+        "port": 3001,
+        "description": "User authentication and authorization",
+        "responsibilities": [
+          "User registration/login",
+          "JWT token management",
+          "Password reset",
+          "OAuth integration",
+          "Role-based access control"
+        ],
+        "resources": {
+          "cpu": "300m",
+          "memory": "256Mi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "project-service",
+      "type": "api",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "Project Management Service",
+        "technology": "Node.js + Express",
+        "port": 3002,
+        "description": "CRUD operations for architecture projects",
+        "responsibilities": [
+          "Create/read/update/delete projects",
+          "Project versioning",
+          "Project templates",
+          "Access control",
+          "Project metadata management"
+        ],
+        "resources": {
+          "cpu": "400m",
+          "memory": "512Mi",
+          "replicas": 3
+        }
+      }
+    },
+    {
+      "id": "collaboration-service",
+      "type": "api",
+      "position": { "x": 650, "y": 200 },
+      "data": {
+        "label": "Real-time Collaboration Service",
+        "technology": "Node.js + Socket.io",
+        "port": 3003,
+        "description": "Real-time collaborative editing",
+        "responsibilities": [
+          "WebSocket connections",
+          "Real-time updates",
+          "Conflict resolution",
+          "User presence",
+          "Change broadcasting"
+        ],
+        "resources": {
+          "cpu": "300m",
+          "memory": "256Mi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "code-generator-service",
+      "type": "api",
+      "position": { "x": 150, "y": 350 },
+      "data": {
+        "label": "Code Generation Service",
+        "technology": "Python + FastAPI",
+        "port": 3004,
+        "description": "Generate infrastructure code from architectures",
+        "responsibilities": [
+          "Docker Compose generation",
+          "Kubernetes YAML generation",
+          "Terraform code generation",
+          "CI/CD pipeline generation",
+          "Documentation generation"
+        ],
+        "resources": {
+          "cpu": "500m",
+          "memory": "1Gi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "template-service",
+      "type": "api",
+      "position": { "x": 400, "y": 350 },
+      "data": {
+        "label": "Template Management Service",
+        "technology": "Go + Gin",
+        "port": 3005,
+        "description": "Manage architecture templates and patterns",
+        "responsibilities": [
+          "Template CRUD operations",
+          "Template categorization",
+          "Template rating/reviews",
+          "Template sharing",
+          "Pattern recommendations"
+        ],
+        "resources": {
+          "cpu": "300m",
+          "memory": "256Mi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "analytics-service",
+      "type": "analytics",
+      "position": { "x": 650, "y": 350 },
+      "data": {
+        "label": "Analytics Service",
+        "technology": "Python + Django",
+        "port": 3006,
+        "description": "Usage analytics and insights",
+        "responsibilities": [
+          "Usage tracking",
+          "Performance metrics",
+          "Architecture analysis",
+          "Recommendations",
+          "Reporting dashboards"
+        ],
+        "resources": {
+          "cpu": "400m",
+          "memory": "512Mi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "notification-service",
+      "type": "api",
+      "position": { "x": 150, "y": 500 },
+      "data": {
+        "label": "Notification Service",
+        "technology": "Node.js + Bull Queue",
+        "port": 3007,
+        "description": "Handle notifications and alerts",
+        "responsibilities": [
+          "Email notifications",
+          "In-app notifications",
+          "Slack integration",
+          "Webhook notifications",
+          "Notification preferences"
+        ],
+        "resources": {
+          "cpu": "200m",
+          "memory": "256Mi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "file-service",
+      "type": "storage",
+      "position": { "x": 400, "y": 500 },
+      "data": {
+        "label": "File Storage Service",
+        "technology": "Node.js + MinIO",
+        "port": 3008,
+        "description": "File upload and storage management",
+        "responsibilities": [
+          "Architecture diagrams storage",
+          "Generated code storage",
+          "Template assets storage",
+          "File versioning",
+          "CDN integration"
+        ],
+        "resources": {
+          "cpu": "300m",
+          "memory": "512Mi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "search-service",
+      "type": "search",
+      "position": { "x": 650, "y": 500 },
+      "data": {
+        "label": "Search Service",
+        "technology": "Elasticsearch + Node.js",
+        "port": 3009,
+        "description": "Search and discovery functionality",
+        "responsibilities": [
+          "Project search",
+          "Template search",
+          "Full-text search",
+          "Search suggestions",
+          "Search analytics"
+        ],
+        "resources": {
+          "cpu": "400m",
+          "memory": "1Gi",
+          "replicas": 2
+        }
+      }
+    },
+    {
+      "id": "postgres-main",
+      "type": "database",
+      "position": { "x": 100, "y": 650 },
+      "data": {
+        "label": "PostgreSQL - Main DB",
+        "technology": "PostgreSQL 15",
+        "port": 5432,
+        "description": "Primary relational database",
+        "responsibilities": [
+          "User data",
+          "Project metadata",
+          "Templates",
+          "Notifications",
+          "Analytics data"
+        ],
+        "resources": {
+          "cpu": "1000m",
+          "memory": "2Gi",
+          "storage": "100Gi",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "postgres-projects",
+      "type": "database",
+      "position": { "x": 300, "y": 650 },
+      "data": {
+        "label": "PostgreSQL - Projects DB",
+        "technology": "PostgreSQL 15",
+        "port": 5433,
+        "description": "Project data storage",
+        "responsibilities": [
+          "Architecture definitions",
+          "Project versions",
+          "Collaboration data",
+          "Access control"
+        ],
+        "resources": {
+          "cpu": "800m",
+          "memory": "1.5Gi",
+          "storage": "200Gi",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "redis-cache",
+      "type": "cache",
+      "position": { "x": 500, "y": 650 },
+      "data": {
+        "label": "Redis Cache",
+        "technology": "Redis 7",
+        "port": 6379,
+        "description": "Caching and session storage",
+        "responsibilities": [
+          "Session storage",
+          "API response caching",
+          "Real-time data",
+          "Rate limiting data",
+          "Temporary storage"
+        ],
+        "resources": {
+          "cpu": "300m",
+          "memory": "1Gi",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "redis-queue",
+      "type": "queue",
+      "position": { "x": 700, "y": 650 },
+      "data": {
+        "label": "Redis Queue",
+        "technology": "Redis 7 + Bull",
+        "port": 6380,
+        "description": "Job queue and message broker",
+        "responsibilities": [
+          "Background jobs",
+          "Code generation queue",
+          "Notification queue",
+          "Analytics processing",
+          "File processing"
+        ],
+        "resources": {
+          "cpu": "200m",
+          "memory": "512Mi",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "elasticsearch",
+      "type": "search",
+      "position": { "x": 900, "y": 650 },
+      "data": {
+        "label": "Elasticsearch",
+        "technology": "Elasticsearch 8",
+        "port": 9200,
+        "description": "Search and analytics engine",
+        "responsibilities": [
+          "Full-text search",
+          "Search analytics",
+          "Log aggregation",
+          "Performance metrics"
+        ],
+        "resources": {
+          "cpu": "1000m",
+          "memory": "2Gi",
+          "storage": "100Gi",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "minio",
+      "type": "storage",
+      "position": { "x": 100, "y": 800 },
+      "data": {
+        "label": "MinIO Object Storage",
+        "technology": "MinIO",
+        "port": 9000,
+        "description": "S3-compatible object storage",
+        "responsibilities": [
+          "File storage",
+          "Asset storage",
+          "Backup storage",
+          "Static content"
+        ],
+        "resources": {
+          "cpu": "500m",
+          "memory": "1Gi",
+          "storage": "1Ti",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "monitoring-stack",
+      "type": "monitoring",
+      "position": { "x": 300, "y": 800 },
+      "data": {
+        "label": "Monitoring Stack",
+        "technology": "Prometheus + Grafana + Jaeger",
+        "port": 9090,
+        "description": "Observability and monitoring",
+        "responsibilities": [
+          "Metrics collection",
+          "Distributed tracing",
+          "Alerting",
+          "Performance monitoring",
+          "Health checks"
+        ],
+        "resources": {
+          "cpu": "800m",
+          "memory": "2Gi",
+          "storage": "50Gi",
+          "replicas": 1
+        }
+      }
+    },
+    {
+      "id": "logging-stack",
+      "type": "monitoring",
+      "position": { "x": 500, "y": 800 },
+      "data": {
+        "label": "Logging Stack",
+        "technology": "ELK Stack (Elasticsearch + Logstash + Kibana)",
+        "port": 5601,
+        "description": "Centralized logging",
+        "responsibilities": [
+          "Log aggregation",
+          "Log analysis",
+          "Error tracking",
+          "Security monitoring",
+          "Audit trails"
+        ],
+        "resources": {
+          "cpu": "1000m",
+          "memory": "3Gi",
+          "storage": "200Gi",
+          "replicas": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "api-gateway",
+      "target": "auth-service",
+      "type": "https",
+      "data": {
+        "label": "Authentication",
+        "protocol": "HTTPS",
+        "description": "User authentication requests"
+      }
+    },
+    {
+      "id": "e2",
+      "source": "api-gateway",
+      "target": "project-service",
+      "type": "https",
+      "data": {
+        "label": "Project API",
+        "protocol": "HTTPS",
+        "description": "Project management requests"
+      }
+    },
+    {
+      "id": "e3",
+      "source": "api-gateway",
+      "target": "collaboration-service",
+      "type": "https",
+      "data": {
+        "label": "Collaboration",
+        "protocol": "HTTPS/WebSocket",
+        "description": "Real-time collaboration"
+      }
+    },
+    {
+      "id": "e4",
+      "source": "api-gateway",
+      "target": "code-generator-service",
+      "type": "https",
+      "data": {
+        "label": "Code Generation",
+        "protocol": "HTTPS",
+        "description": "Code generation requests"
+      }
+    },
+    {
+      "id": "e5",
+      "source": "api-gateway",
+      "target": "template-service",
+      "type": "https",
+      "data": {
+        "label": "Templates",
+        "protocol": "HTTPS",
+        "description": "Template management"
+      }
+    },
+    {
+      "id": "e6",
+      "source": "api-gateway",
+      "target": "analytics-service",
+      "type": "https",
+      "data": {
+        "label": "Analytics",
+        "protocol": "HTTPS",
+        "description": "Analytics and reporting"
+      }
+    },
+    {
+      "id": "e7",
+      "source": "api-gateway",
+      "target": "file-service",
+      "type": "https",
+      "data": {
+        "label": "File Upload",
+        "protocol": "HTTPS",
+        "description": "File upload/download"
+      }
+    },
+    {
+      "id": "e8",
+      "source": "api-gateway",
+      "target": "search-service",
+      "type": "https",
+      "data": {
+        "label": "Search",
+        "protocol": "HTTPS",
+        "description": "Search functionality"
+      }
+    },
+    {
+      "id": "e9",
+      "source": "auth-service",
+      "target": "postgres-main",
+      "type": "encrypted-data",
+      "data": {
+        "label": "User Data",
+        "protocol": "PostgreSQL",
+        "description": "User authentication data"
+      }
+    },
+    {
+      "id": "e10",
+      "source": "project-service",
+      "target": "postgres-projects",
+      "type": "encrypted-data",
+      "data": {
+        "label": "Project Data",
+        "protocol": "PostgreSQL",
+        "description": "Architecture project data"
+      }
+    },
+    {
+      "id": "e11",
+      "source": "project-service",
+      "target": "redis-cache",
+      "type": "sync",
+      "data": {
+        "label": "Caching",
+        "protocol": "Redis",
+        "description": "Project metadata caching"
+      }
+    },
+    {
+      "id": "e12",
+      "source": "collaboration-service",
+      "target": "redis-cache",
+      "type": "sync",
+      "data": {
+        "label": "Real-time Data",
+        "protocol": "Redis",
+        "description": "Real-time collaboration state"
+      }
+    },
+    {
+      "id": "e13",
+      "source": "code-generator-service",
+      "target": "redis-queue",
+      "type": "async",
+      "data": {
+        "label": "Job Queue",
+        "protocol": "Redis Queue",
+        "description": "Background code generation"
+      }
+    },
+    {
+      "id": "e14",
+      "source": "code-generator-service",
+      "target": "file-service",
+      "type": "sync",
+      "data": {
+        "label": "Generated Files",
+        "protocol": "HTTP",
+        "description": "Store generated code files"
+      }
+    },
+    {
+      "id": "e15",
+      "source": "template-service",
+      "target": "postgres-main",
+      "type": "encrypted-data",
+      "data": {
+        "label": "Template Data",
+        "protocol": "PostgreSQL",
+        "description": "Template definitions"
+      }
+    },
+    {
+      "id": "e16",
+      "source": "analytics-service",
+      "target": "postgres-main",
+      "type": "encrypted-data",
+      "data": {
+        "label": "Analytics Data",
+        "protocol": "PostgreSQL",
+        "description": "Usage analytics"
+      }
+    },
+    {
+      "id": "e17",
+      "source": "notification-service",
+      "target": "redis-queue",
+      "type": "async",
+      "data": {
+        "label": "Notification Queue",
+        "protocol": "Redis Queue",
+        "description": "Asynchronous notifications"
+      }
+    },
+    {
+      "id": "e18",
+      "source": "file-service",
+      "target": "minio",
+      "type": "sync",
+      "data": {
+        "label": "Object Storage",
+        "protocol": "S3 API",
+        "description": "File storage operations"
+      }
+    },
+    {
+      "id": "e19",
+      "source": "search-service",
+      "target": "elasticsearch",
+      "type": "sync",
+      "data": {
+        "label": "Search Index",
+        "protocol": "HTTP",
+        "description": "Search operations"
+      }
+    },
+    {
+      "id": "e20",
+      "source": "project-service",
+      "target": "notification-service",
+      "type": "async",
+      "data": {
+        "label": "Project Events",
+        "protocol": "HTTP",
+        "description": "Project change notifications"
+      }
+    },
+    {
+      "id": "e21",
+      "source": "collaboration-service",
+      "target": "notification-service",
+      "type": "async",
+      "data": {
+        "label": "Collaboration Events",
+        "protocol": "HTTP",
+        "description": "Real-time event notifications"
+      }
+    },
+    {
+      "id": "e22",
+      "source": "project-service",
+      "target": "search-service",
+      "type": "async",
+      "data": {
+        "label": "Search Indexing",
+        "protocol": "HTTP",
+        "description": "Index projects for search"
+      }
+    },
+    {
+      "id": "e23",
+      "source": "template-service",
+      "target": "search-service",
+      "type": "async",
+      "data": {
+        "label": "Template Indexing",
+        "protocol": "HTTP",
+        "description": "Index templates for search"
+      }
+    }
+  ],
+  "api_endpoints": {
+    "auth-service": [
+      "POST /auth/register",
+      "POST /auth/login", 
+      "POST /auth/logout",
+      "POST /auth/refresh",
+      "GET /auth/profile",
+      "PUT /auth/profile",
+      "POST /auth/reset-password"
+    ],
+    "project-service": [
+      "GET /projects",
+      "POST /projects",
+      "GET /projects/:id",
+      "PUT /projects/:id",
+      "DELETE /projects/:id",
+      "GET /projects/:id/versions",
+      "POST /projects/:id/versions",
+      "GET /projects/:id/collaborators",
+      "POST /projects/:id/collaborators"
+    ],
+    "collaboration-service": [
+      "WebSocket /ws/projects/:id",
+      "GET /collaboration/:projectId/users",
+      "POST /collaboration/:projectId/cursor",
+      "GET /collaboration/:projectId/changes"
+    ],
+    "code-generator-service": [
+      "POST /generate/docker-compose",
+      "POST /generate/kubernetes",
+      "POST /generate/terraform",
+      "GET /generate/status/:jobId",
+      "GET /generate/download/:jobId"
+    ],
+    "template-service": [
+      "GET /templates",
+      "POST /templates",
+      "GET /templates/:id",
+      "PUT /templates/:id",
+      "DELETE /templates/:id",
+      "GET /templates/categories",
+      "POST /templates/:id/rate"
+    ],
+    "analytics-service": [
+      "GET /analytics/usage",
+      "GET /analytics/projects/:id",
+      "GET /analytics/templates/popular",
+      "GET /analytics/performance",
+      "POST /analytics/events"
+    ],
+    "file-service": [
+      "POST /files/upload",
+      "GET /files/:id",
+      "DELETE /files/:id",
+      "GET /files/:id/versions"
+    ],
+    "search-service": [
+      "GET /search/projects",
+      "GET /search/templates",
+      "GET /search/suggest",
+      "POST /search/index"
+    ]
+  },
+  "infrastructure": {
+    "deployment": "Kubernetes",
+    "service_mesh": "Istio",
+    "ingress": "Nginx Ingress Controller",
+    "monitoring": "Prometheus + Grafana + Jaeger",
+    "logging": "ELK Stack",
+    "secret_management": "Kubernetes Secrets",
+    "ci_cd": "GitHub Actions",
+    "container_registry": "Docker Hub / Harbor"
+  }
+}

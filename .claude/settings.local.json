@@ -28,7 +28,11 @@
       "Bash(mv:*)",
       "Bash(docker:*)",
       "Bash(curl:*)",
-      "Bash(./generate-traffic.sh:*)"
+      "Bash(./generate-traffic.sh:*)",
+      "Bash(for i in {1..5})",
+      "Bash(do echo \"Test $i:\")",
+      "Bash(done)",
+      "Bash(openssl req:*)"
     ],
     "deny": []
   }
