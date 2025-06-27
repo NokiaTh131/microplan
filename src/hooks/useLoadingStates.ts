@@ -13,7 +13,7 @@ interface LoadingStates {
 // Hook for managing multiple loading states across the application
 export const useLoadingStates = () => {
   const [loadingStates, setLoadingStates] = useState<LoadingStates>({});
-  const timeoutRefs = useRef<Map<string, number>>(new Map());
+  const timeoutRefs = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   // Set loading state for a specific operation
   const setLoading = useCallback(
