@@ -53,14 +53,30 @@ backup_data() {
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
     
     # Backup database if running
-    if docker-compose -f "$COMPOSE_FILE" ps postgres | grep -q "Up"; then
+    if docker-compose -f "$COMPOSE_FILE" ps postgres 2>/dev/null | grep -q "Up"; then
         log "Backing up database..."
-        docker-compose -f "$COMPOSE_FILE" exec -T postgres pg_dump -U microplan microplan > "$BACKUP_DIR/db_backup_$TIMESTAMP.sql"
+        docker-compose -f "$COMPOSE_FILE" exec -T postgres pg_dump -U microplan microplan > "$BACKUP_DIR/db_backup_$TIMESTAMP.sql" 2>/dev/null || true
+    else
+        log "PostgreSQL service not running, skipping database backup"
     fi
     
-    # Backup volumes
-    log "Backing up volumes..."
-    docker run --rm -v microplan-postgres-prod:/data -v "$(pwd)/$BACKUP_DIR":/backup alpine tar czf "/backup/volumes_backup_$TIMESTAMP.tar.gz" -C /data .
+    # Backup volumes (only if volumes exist)
+    log "Checking for volumes to backup..."
+    if docker volume ls | grep -q "microplan-postgres-prod"; then
+        log "Backing up volumes..."
+        # Use absolute path and escape Windows path conversion
+        BACKUP_PATH="$(pwd)/$BACKUP_DIR"
+        if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+            # Windows Git Bash - use winpty and fix path
+            BACKUP_PATH="$(cygpath -w "$(pwd)/$BACKUP_DIR" | sed 's|\\|/|g')"
+            docker run --rm -v microplan-postgres-prod:/data -v "$BACKUP_PATH":/backup alpine sh -c "cd /data && tar czf /backup/volumes_backup_$TIMESTAMP.tar.gz . 2>/dev/null || true"
+        else
+            # Linux/Mac
+            docker run --rm -v microplan-postgres-prod:/data -v "$BACKUP_PATH":/backup alpine tar czf "/backup/volumes_backup_$TIMESTAMP.tar.gz" -C /data . 2>/dev/null || true
+        fi
+    else
+        log "No volumes found to backup"
+    fi
     
     log "Backup completed: $BACKUP_DIR"
 }

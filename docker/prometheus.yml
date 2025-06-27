@@ -16,7 +16,9 @@ scrape_configs:
   # Traefik metrics
   - job_name: 'traefik'
     static_configs:
-      - targets: ['traefik:8082']
+      - targets: ['traefik:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
 
   # Node exporter (if added in the future)
   - job_name: 'node-exporter'

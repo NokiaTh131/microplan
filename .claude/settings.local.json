@@ -21,7 +21,14 @@
       "Bash(npx vite build:*)",
       "Bash(npm run lint:*)",
       "Bash(timeout 10 npm run dev)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(cp:*)",
+      "Bash(docker-compose:*)",
+      "Bash(./scripts/simple-deploy.sh:*)",
+      "Bash(mv:*)",
+      "Bash(docker:*)",
+      "Bash(curl:*)",
+      "Bash(./generate-traffic.sh:*)"
     ],
     "deny": []
   }

@@ -1,36 +1,37 @@
-# Production Docker Compose configuration
-version: '3.8'
-
 services:
   # Main application service for production
   microplan:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.simple
       args:
         - NODE_ENV=production
-    image: microplan:latest
     container_name: microplan-app
     restart: unless-stopped
     networks:
       - microplan-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.microplan.rule=Host(\`microplan.localhost\`)"
+      - "traefik.http.routers.microplan.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.microplan.entrypoints=web"
       - "traefik.http.services.microplan.loadbalancer.server.port=8080"
+      - "traefik.http.services.microplan.loadbalancer.server.name=microplan-app"
     security_opt:
       - no-new-privileges:true
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /var/cache/nginx
-      - /var/run
 
   # Load balancer and reverse proxy
   traefik:
@@ -38,22 +39,25 @@ services:
     container_name: microplan-traefik
     command:
       - "--api.dashboard=true"
-      - "--api.debug=false"
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.email=admin@microplan.com"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--log.level=INFO"
       - "--accesslog=true"
       - "--metrics.prometheus=true"
-      - "--metrics.prometheus.address=:8082"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--tracing.otlp=true"
+      - "--tracing.otlp.http=true"
+      - "--tracing.otlp.http.endpoint=http://jaeger:4318/v1/traces"
+      - "--tracing.sampleRate=1.0"
+      - "--tracing.serviceName=traefik"
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"  # Traefik dashboard
+      - "8081:8080" # Traefik dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik_acme:/acme.json
@@ -67,7 +71,7 @@ services:
       retries: 3
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(\`traefik.localhost\`)"
+      - 'traefik.http.routers.dashboard.rule=Host("traefik.localhost")'
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$2y$$10$$2b2cu2V2d2Z2d2Z2d2Z2de"
@@ -90,7 +94,15 @@ services:
       - microplan-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-microplan_redis_secret}", "ping"]
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "--no-auth-warning",
+          "-a",
+          "${REDIS_PASSWORD:-microplan_redis_secret}",
+          "ping",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -119,7 +131,11 @@ services:
       - microplan-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-microplan} -d ${POSTGRES_DB:-microplan}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-microplan} -d ${POSTGRES_DB:-microplan}",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -132,20 +148,30 @@ services:
     image: prom/prometheus:v2.48.0
     container_name: microplan-prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-      - '--storage.tsdb.retention.time=30d'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
+      - "--storage.tsdb.retention.time=30d"
     volumes:
       - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
     networks:
       - microplan-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:9090/-/healthy",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -167,18 +193,49 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
     networks:
       - microplan-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(\`grafana.localhost\`)"
+      - 'traefik.http.routers.grafana.rule=Host("grafana.localhost")'
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    security_opt:
+      - no-new-privileges:true
+
+  # Jaeger for distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: microplan-jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # Jaeger collector HTTP
+      - "14250:14250"  # Jaeger collector gRPC
+      - "6831:6831/udp"  # Jaeger agent UDP
+      - "6832:6832/udp"  # Jaeger agent UDP
+      - "9411:9411"    # Zipkin collector
+    networks:
+      - microplan-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:16686/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     security_opt:
       - no-new-privileges:true
 
@@ -188,7 +245,7 @@ networks:
     name: microplan-production
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 172.25.0.0/16
 
 volumes:
   postgres_data:

@@ -1,0 +1,25 @@
+# Simple Dockerfile for quick deployment - serves static files
+FROM nginx:1.25-alpine
+
+# Install security updates
+RUN apk upgrade --no-cache
+
+# Copy pre-built application files (you need to run 'npm run build' first)
+COPY dist/ /usr/share/nginx/html/
+
+# Copy nginx configuration
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/default.conf /etc/nginx/conf.d/default.conf
+
+# Set permissions for nginx directories
+RUN mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp \
+    /var/cache/nginx/fastcgi_temp /var/cache/nginx/uwsgi_temp \
+    /var/cache/nginx/scgi_temp && \
+    chmod -R 755 /usr/share/nginx/html
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]

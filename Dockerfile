@@ -22,9 +22,9 @@ FROM nginx:1.25-alpine AS production
 # Install security updates
 RUN apk upgrade --no-cache
 
-# Create non-root user for nginx
+# Optional: Add new group and assign existing nginx user to it
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nginx -u 1001 -G nodejs
+    adduser nginx nodejs
 
 # Copy custom nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
@@ -41,12 +41,9 @@ RUN mkdir -p /var/cache/nginx /var/run && \
 # Switch to non-root user
 USER nginx
 
-# Expose port
 EXPOSE 8080
 
-# Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]

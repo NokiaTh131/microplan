@@ -33,11 +33,42 @@ cp .env.example .env
 # Edit .env with production values
 
 # Deploy production stack
+# Option 1: Full deployment (Linux/Mac)
 ./scripts/deploy.sh deploy
+
+# Option 2: Simple deployment (cross-platform)
+./scripts/simple-deploy.sh
+
+# Option 3: Windows PowerShell
+scripts/deploy.ps1 deploy
+# or
+scripts/deploy.bat deploy
+
+# Option 4: Manual deployment
+docker-compose -f docker-compose.prod.yml up -d
 
 # Access the application
 open http://localhost (or your domain)
 ```
+
+### Windows Users
+
+If you encounter path issues with Git Bash, use one of these alternatives:
+
+1. **PowerShell** (Recommended):
+   ```powershell
+   .\scripts\deploy.ps1 deploy
+   ```
+
+2. **Command Prompt**:
+   ```cmd
+   scripts\deploy.bat deploy
+   ```
+
+3. **Simple deployment** (no backup):
+   ```bash
+   ./scripts/simple-deploy.sh
+   ```
 
 ## 📁 File Structure
 
