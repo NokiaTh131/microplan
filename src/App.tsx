@@ -3,13 +3,15 @@ import EdgeSelector from "./components/Toolbar/EdgeSelector";
 import MicroservicesCanvas from "./components/Canvas/MicroservicesCanvas";
 import TabPanel from "./components/UI/TabPanel";
 import ResizablePanel from "./components/UI/ResizablePanel";
-import EmptyStateHint from "./components/UI/EmptyStateHint";
 import ErrorBoundary from "./components/UI/ErrorBoundary";
 import ToastProvider from "./components/UI/ToastProvider";
+import VisibilityMenu from "./components/UI/VisibilityMenu";
 import { usePanelVisibility } from "./hooks/usePanelVisibility";
+import { useArchitectureStore } from "./stores/architectureStore";
 
 function App() {
   const { shouldShowPanel } = usePanelVisibility();
+  const { isPanelVisible, isEdgeSelectorVisible } = useArchitectureStore();
 
   return (
     <ErrorBoundary>
@@ -51,17 +53,15 @@ function App() {
                 <MicroservicesCanvas />
               </ErrorBoundary>
 
-              {/* Edge Selector Overlay */}
-              <div className="absolute top-4 right-4 z-10">
-                <EdgeSelector />
+              {/* UI Controls - positioned side by side */}
+              <div className="absolute top-4 right-4 z-10 flex items-start gap-4">
+                <VisibilityMenu />
+                {isEdgeSelectorVisible && <EdgeSelector />}
               </div>
-
-              {/* Show hint when panel is hidden */}
-              {!shouldShowPanel && <EmptyStateHint />}
             </main>
 
             {/* Right Sidebar - Conditionally Rendered Tabbed Panels */}
-            {shouldShowPanel && (
+            {shouldShowPanel && isPanelVisible && (
               <ErrorBoundary>
                 <ResizablePanel
                   defaultWidth={384}

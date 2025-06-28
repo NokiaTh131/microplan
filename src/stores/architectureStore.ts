@@ -43,6 +43,8 @@ interface ArchitectureState {
   selectedNode: Node | null;
   selectedEdge: Edge | null;
   selectedEdgeType: CommunicationType;
+  isPanelVisible: boolean;
+  isEdgeSelectorVisible: boolean;
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
@@ -51,6 +53,8 @@ interface ArchitectureState {
   selectNode: (node: Node | null) => void;
   selectEdge: (edge: Edge | null) => void;
   setSelectedEdgeType: (edgeType: CommunicationType) => void;
+  setPanelVisibility: (visible: boolean) => void;
+  setEdgeSelectorVisibility: (visible: boolean) => void;
   deleteNode: (id: string) => void;
   deleteEdge: (id: string) => void;
   loadTemplate: (nodes: Node[], edges: Edge[]) => void;
@@ -62,6 +66,8 @@ export const useArchitectureStore = create<ArchitectureState>((set, get) => ({
   selectedNode: null,
   selectedEdge: null,
   selectedEdgeType: 'sync',
+  isPanelVisible: true,
+  isEdgeSelectorVisible: true,
 
   onNodesChange: (changes) => {
     set({
@@ -250,6 +256,14 @@ export const useArchitectureStore = create<ArchitectureState>((set, get) => ({
 
   setSelectedEdgeType: (edgeType) => {
     set({ selectedEdgeType: edgeType });
+  },
+
+  setPanelVisibility: (visible) => {
+    set({ isPanelVisible: visible });
+  },
+
+  setEdgeSelectorVisibility: (visible) => {
+    set({ isEdgeSelectorVisible: visible });
   },
 
   deleteNode: (id) => {

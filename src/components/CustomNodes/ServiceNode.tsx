@@ -235,13 +235,15 @@ const ServiceNode: React.FC<NodeProps> = ({ id, data, selected }) => {
         </div>
       </div>
 
-      {/* Delete Button - Only show on hover */}
-      <button
-        onClick={handleDelete}
-        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-md"
-      >
-        <Trash2 className="w-3 h-3" />
-      </button>
+      {/* Delete Button - Only show when selected */}
+      {selected && (
+        <button
+          onClick={handleDelete}
+          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:scale-110"
+        >
+          <Trash2 className="w-3 h-3" />
+        </button>
+      )}
 
       {/* Node Label - Show on hover */}
       <div className="absolute -bottom-7 left-1/2 -translate-x-1/2">
